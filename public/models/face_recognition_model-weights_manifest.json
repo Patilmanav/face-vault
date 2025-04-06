@@ -1,0 +1,19 @@
+[
+  {
+    "weightsManifest": [
+      {
+        "paths": ["face_recognition_model-shard1"],
+        "weights": [
+          {"name": "conv32/weights", "shape": [3, 3, 3, 32], "dtype": "float32"},
+          {"name": "conv32/bias", "shape": [32], "dtype": "float32"},
+          {"name": "conv64/weights", "shape": [3, 3, 32, 64], "dtype": "float32"},
+          {"name": "conv64/bias", "shape": [64], "dtype": "float32"},
+          {"name": "conv128/weights", "shape": [3, 3, 64, 128], "dtype": "float32"},
+          {"name": "conv128/bias", "shape": [128], "dtype": "float32"},
+          {"name": "fc/weights", "shape": [128, 128], "dtype": "float32"},
+          {"name": "fc/bias", "shape": [128], "dtype": "float32"}
+        ]
+      }
+    ]
+  }
+] 

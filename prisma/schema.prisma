@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  images        Image[]
+  storageUsed   Int       @default(0)
+  imageCount    Int       @default(0)
+  maxStorage    Int       @default(1073741824) // 1GB in bytes
+  maxImages     Int       @default(100)
+}
+
+model Image {
+  id          String    @id @default(cuid())
+  url         String
+  label       String?
+  details     String?
+  faceData    Json?     // Store face recognition data
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+} 

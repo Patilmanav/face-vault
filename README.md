@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FaceVault
+
+A web application for managing and searching images based on face recognition.
+
+## Features
+
+- User authentication
+- Image upload with face detection
+- Face-based image grouping
+- Image search by face
+- Dashboard with recent images
+- View all images grouped by faces
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
+- Node.js 18+ and npm
+- Flask backend (for production use)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Create a `.env` file with the following variables:
+   ```
+   FLASK_API_URL=http://localhost:5000/api
+   ```
+
+### Development
+
+Run the development server:
+
+```
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Image Upload Process
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses a two-step process for uploading images:
 
-## Learn More
+1. **Upload Images**: Select multiple images to upload at once.
+2. **Review and Group**: After upload, images are automatically grouped based on detected faces. You can add labels and details to each group.
 
-To learn more about Next.js, take a look at the following resources:
+## Face Groups
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Face Groups feature allows you to view all your uploaded images that have been automatically grouped based on detected faces. This makes it easy to:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- See all images of the same person in one place
+- Add or edit labels and details for groups of images
+- Organize your face database efficiently
 
-## Deploy on Vercel
+To access the Face Groups page, click on the "Face Groups" tab in the navigation bar.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Testing with Mock API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For testing purposes, the application uses a mock API that simulates the Flask backend. To switch to the real API:
+
+1. Open `src/app/upload/page.tsx`
+2. Change the API endpoint from `/api/mock/upload-batch` to `/api/images/upload-batch`
+
+### API Documentation
+
+For detailed information about all API endpoints, request/response formats, and implementation details, please refer to the [API Documentation](API.md).
+
+## License
+
+This project is licensed under the MIT License.
