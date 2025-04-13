@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email } = body;
+    // const { name, email } = body;
 
     // Forward the request to the Flask backend
     const response = await fetch(`${process.env.FLASK_API_URL}/users/profile`, {
@@ -12,6 +12,7 @@ export async function PUT(request: NextRequest) {
         "Content-Type": "application/json",
         Authorization: request.headers.get("Authorization") || "",
       },
+      body: JSON.stringify(body),
       credentials: "include",
     });
 

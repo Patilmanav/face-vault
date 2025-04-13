@@ -12,6 +12,7 @@ export async function PUT(request: NextRequest) {
         "Content-Type": "application/json",
         Authorization: request.headers.get("Authorization") || "",
       },
+      body: JSON.stringify({ currentPassword, newPassword }),
       credentials: "include",
     });
 

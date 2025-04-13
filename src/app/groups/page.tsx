@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { AlertCircle, Users, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface FaceGroup {
   id: string;
@@ -87,7 +88,7 @@ export default function GroupsPage() {
           <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h2 className="text-lg font-medium mb-2">No Face Groups Found</h2>
           <p className="text-gray-600 mb-4">
-            You haven't uploaded any images with faces yet.
+            You haven&#39;t uploaded any images with faces yet.
           </p>
           <button
             onClick={() => router.push("/upload")}
@@ -117,9 +118,11 @@ export default function GroupsPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {group.imageUrls.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img
+                    <Image
                       src={url}
                       alt={`Group ${group.id} image ${index + 1}`}
+                      width={128}
+                      height={128}
                       className="w-full h-32 object-cover rounded"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded"></div>
@@ -132,4 +135,4 @@ export default function GroupsPage() {
       )}
     </div>
   );
-} 
+}

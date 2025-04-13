@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import Link from "next/link";
 import { Upload, Search, Image as ImageIcon, Trash2, Edit, AlertCircle, Users } from "lucide-react";
+import Image from "next/image";
 
 interface Image {
   id: string;
@@ -162,30 +163,31 @@ export default function DashboardPage() {
         ) : recentImages.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {recentImages.map((image) => (
-              <div key={image.id} className="border rounded-lg overflow-hidden">
-                <div className="aspect-square relative bg-gray-100">
-                  <img
-                    src={image.url}
-                    alt={image.label || "Uploaded image"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-3">
-                  <h3 className="font-medium truncate">{image.label || "Untitled"}</h3>
-                  <p className="text-xs text-gray-500">
-                    {new Date(image.createdAt).toLocaleDateString()}
-                  </p>
-                  <div className="flex justify-end mt-2 space-x-2">
-                    <button className="text-gray-500 hover:text-blue-600">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="text-gray-500 hover:text-red-600">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+  <div key={image.id} className="border rounded-lg overflow-hidden">
+    <div className="aspect-square relative bg-gray-100">
+      <Image
+        src={image.url}
+        alt={image.label || "Uploaded image"}
+        layout="fill" // Ensures the image fills the container
+        objectFit="cover" // Maintains aspect ratio and covers the container
+      />
+    </div>
+    <div className="p-3">
+      <h3 className="font-medium truncate">{image.label || "Untitled"}</h3>
+      <p className="text-xs text-gray-500">
+        {new Date(image.createdAt).toLocaleDateString()}
+      </p>
+      <div className="flex justify-end mt-2 space-x-2">
+        <button className="text-gray-500 hover:text-blue-600">
+          <Edit className="w-4 h-4" />
+        </button>
+        <button className="text-gray-500 hover:text-red-600">
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </div>
+))}
           </div>
         ) : (
           <div className="text-center py-8">

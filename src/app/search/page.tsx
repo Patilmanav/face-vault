@@ -28,9 +28,9 @@ export default function SearchPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState("");
   const [faceDetected, setFaceDetected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [searchThreshold, setSearchThreshold] = useState(0.6);
-  const [modelsLoaded, setModelsLoaded] = useState(false);
+  // const [modelsLoaded, setModelsLoaded] = useState(false);
   const [modelLoadError, setModelLoadError] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function SearchPage() {
     // Load face-api models
     const loadModels = async () => {
       try {
-        setIsLoading(true);
+        // setIsLoading(true);
         setModelLoadError(false);
         
         // Try to load the models
@@ -53,13 +53,13 @@ export default function SearchPage() {
           faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
         ]);
         
-        setModelsLoaded(true);
-        setIsLoading(false);
+        // setModelsLoaded(true);
+        // setIsLoading(false);
       } catch (error) {
         console.error("Error loading face-api models:", error);
         setModelLoadError(true);
         setError("Failed to load face detection models. You can still upload images for search.");
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 
@@ -176,7 +176,13 @@ export default function SearchPage() {
     const file = e.dataTransfer.files?.[0];
     if (file && fileInputRef.current) {
       fileInputRef.current.files = e.dataTransfer.files;
-      handleFileChange({ target: { files: [file] } } as any);
+      const syntheticEvent = {
+        target: { files: e.dataTransfer.files } as HTMLInputElement,
+        currentTarget: { files: e.dataTransfer.files } as HTMLInputElement,
+        preventDefault: () => {},
+        stopPropagation: () => {},
+      } as React.ChangeEvent<HTMLInputElement>;
+      handleFileChange(syntheticEvent);
     }
   };
 

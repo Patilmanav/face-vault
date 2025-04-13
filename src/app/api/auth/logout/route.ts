@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Forward the request to the Flask backend
     const response = await fetch(`${process.env.FLASK_API_URL}/auth/logout`, {

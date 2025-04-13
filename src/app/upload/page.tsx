@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
-import { Upload, AlertCircle, X, Image as ImageIcon, CheckCircle, ArrowLeft, ArrowRight, Users, User } from "lucide-react";
+import { Upload, AlertCircle, X, CheckCircle, ArrowLeft, ArrowRight, Users } from "lucide-react";
+import Image from 'next/image';
 
 interface ImageFile {
   file: File;
@@ -41,7 +42,7 @@ export default function UploadPage() {
   const [currentStep, setCurrentStep] = useState<'upload' | 'review'>('upload');
   const [faceGroups, setFaceGroups] = useState<FaceGroup[]>([]);
   const [rejectedImages, setRejectedImages] = useState<{filename: string, reason: string}[]>([]);
-  const [uploadResponse, setUploadResponse] = useState<UploadResponse | null>(null);
+  // const [uploadResponse, setUploadResponse] = useState<UploadResponse | null>(null);
 
   if (loading || !isAuthenticated) {
     router.push("/login");
@@ -102,8 +103,9 @@ export default function UploadPage() {
     
     const files = e.dataTransfer.files;
     if (files && files.length > 0 && fileInputRef.current) {
+      const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
       fileInputRef.current.files = files;
-      handleFileChange({ target: { files } } as any);
+      handleFileChange(event);
     }
   };
 
@@ -125,6 +127,7 @@ export default function UploadPage() {
       // Create FormData with all images
       const formData = new FormData();
       images.forEach((image, index) => {
+        console.log(`Uploading image ${index + 1}: ${image.file.name}`);
         formData.append(`images`, image.file);
       });
 
@@ -142,7 +145,7 @@ export default function UploadPage() {
       }
 
       const data: UploadResponse = await response.json();
-      setUploadResponse(data);
+      // setUploadResponse(data);
       
       // Process the response
       if (data.success) {
@@ -181,7 +184,7 @@ export default function UploadPage() {
       // Redirect to dashboard or show success message
       router.push('/dashboard');
     } catch (err) {
-      setError("Failed to save changes. Please try again.");
+      setError("Failed to save changes. Please try again. "+err);
     }
   };
 
@@ -243,9 +246,11 @@ export default function UploadPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {images.map((image) => (
                   <div key={image.previewUrl} className="relative group">
-                    <img
+                    <Image
                       src={image.previewUrl}
                       alt="Preview"
+                      width={500}
+                      height={500}
                       className="w-full h-32 object-cover rounded"
                     />
                     <button
@@ -349,9 +354,11 @@ export default function UploadPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {group.imageUrls.map((url, index) => (
                         <div key={index} className="relative">
-                          <img
+                          <Image
                             src={url}
                             alt={`Group ${group.id} image ${index + 1}`}
+                            width={500}
+                            height={500}
                             className="w-full h-24 object-cover rounded"
                           />
                         </div>
@@ -392,4 +399,4 @@ export default function UploadPage() {
       )}
     </div>
   );
-} 
+}

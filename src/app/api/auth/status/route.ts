@@ -1,41 +1,33 @@
+// /app/api/auth/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    // Forward the request to the Flask backend
-    const response = await fetch(`${process.env.FLASK_API_URL}/auth/status`, {
+    const authHeader = request.headers.get("Authorization");
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/v1/auth/me`, {
       method: "GET",
       headers: {
+        "Authorization": authHeader || "", // forward token
         "Content-Type": "application/json",
       },
-      // Forward cookies from the client to the Flask backend
-      credentials: "include",
     });
 
     const data = await response.json();
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || "Authentication check failed" },
+        { success: false, message: data.detail || "Authentication check failed" },
         { status: response.status }
       );
     }
 
-    // Create a response with the user data
-    const nextResponse = NextResponse.json(data);
-
-    // Copy cookies from Flask response to Next.js response
-    const cookies = response.headers.getSetCookie();
-    cookies.forEach((cookie) => {
-      nextResponse.headers.append("Set-Cookie", cookie);
+    return NextResponse.json({
+      success: true,
+      user: data,
     });
-
-    return nextResponse;
   } catch (error) {
     console.error("Auth status API error:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
-} 
+}
