@@ -2,30 +2,54 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the Flask API URL from environment variables
-    const flaskApiUrl = process.env.FLASK_API_URL || "http://localhost:5000/api";
+    // Get the form data from the request
+    const formData = await request.formData();
     
     // Forward the request to the Flask backend
-    const response = await fetch(`${flaskApiUrl}/images/upload-batch`, {
+    const response = await fetch(`${process.env.FLASK_API_URL}/images/upload-batch`, {
       method: "POST",
-      body: request.body,
+      body: formData,
       headers: {
-        // Forward cookies for authentication
-        Cookie: request.headers.get("cookie") || "",
+        Authorization: request.headers.get("Authorization") || "",
       },
+      credentials: "include",
     });
 
-    // Get the response data
     const data = await response.json();
-    
-    // Return the response with the same status code
-    return NextResponse.json(data, { status: response.status });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { 
+          success: false,
+          message: data.message || "Batch upload failed",
+          faceGroups: [],
+          rejectedImages: []
+        },
+        { status: response.status }
+      );
+    }
+
+    // Create a response with the batch upload results
+    const nextResponse = NextResponse.json({
+      success: true,
+      message: "Batch upload completed successfully",
+      faceGroups: data.faceGroups || [],
+      rejectedImages: data.rejectedImages || []
+    });
+
+    // Copy cookies from Flask response to Next.js response
+    const cookies = response.headers.getSetCookie();
+    cookies.forEach((cookie) => {
+      nextResponse.headers.append("Set-Cookie", cookie);
+    });
+
+    return nextResponse;
   } catch (error) {
-    console.error("Error in batch upload API route:", error);
+    console.error("Batch upload API error:", error);
     return NextResponse.json(
       { 
-        success: false, 
-        message: "Failed to upload images",
+        success: false,
+        message: "An unexpected error occurred",
         faceGroups: [],
         rejectedImages: []
       },

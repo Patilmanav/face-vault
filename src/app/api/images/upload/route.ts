@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
     const response = await fetch(`${process.env.FLASK_API_URL}/images/upload`, {
       method: "POST",
       body: formData,
-      // Forward cookies from the client to the Flask backend
+      headers: {
+        Authorization: request.headers.get("Authorization") || "",
+      },
       credentials: "include",
     });
 
@@ -17,13 +19,20 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || "Image upload failed" },
+        { 
+          success: false,
+          message: data.message || "Image upload failed" 
+        },
         { status: response.status }
       );
     }
 
     // Create a response with the image data
-    const nextResponse = NextResponse.json(data);
+    const nextResponse = NextResponse.json({
+      success: true,
+      message: "Image uploaded successfully",
+      image: data.image
+    });
 
     // Copy cookies from Flask response to Next.js response
     const cookies = response.headers.getSetCookie();
@@ -35,7 +44,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Image upload API error:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      { 
+        success: false,
+        message: "An unexpected error occurred" 
+      },
       { status: 500 }
     );
   }

@@ -18,13 +18,21 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || "Login failed" },
+        { 
+          success: false,
+          message: data.message || "Login failed" 
+        },
         { status: response.status }
       );
     }
 
     // Create a response with the user data
-    const nextResponse = NextResponse.json(data);
+    const nextResponse = NextResponse.json({
+      success: true,
+      message: "Login successful",
+      token: data.token,
+      user: data.user
+    });
 
     // Copy cookies from Flask response to Next.js response
     const cookies = response.headers.getSetCookie();
@@ -36,7 +44,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Login API error:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      { 
+        success: false,
+        message: "An unexpected error occurred" 
+      },
       { status: 500 }
     );
   }

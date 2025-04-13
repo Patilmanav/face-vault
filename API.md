@@ -1,6 +1,6 @@
-# FaceVault API Documentation
+# FaceVault API Documentation (Protected API Version)
 
-This document provides a comprehensive overview of all API endpoints in the FaceVault application.
+This document provides a comprehensive overview of all **protected** API endpoints in the FaceVault application. These endpoints require user authentication via a JWT token.
 
 ## Table of Contents
 
@@ -9,15 +9,17 @@ This document provides a comprehensive overview of all API endpoints in the Face
 - [Image Search](#image-search)
 - [Face Groups](#face-groups)
 - [User Management](#user-management)
+- [Error Responses](#error-responses)
+
+---
 
 ## Authentication
 
 ### Login
 
-Authenticates a user and returns a session token.
+Authenticates a user and returns a JWT token.
 
-**Endpoint:** `/api/auth/login`
-
+**Endpoint:** `/api/auth/login`  
 **Method:** `POST`
 
 **Request Body:**
@@ -33,6 +35,7 @@ Authenticates a user and returns a session token.
 {
   "success": true,
   "message": "Login successful",
+  "token": "<JWT_TOKEN>",
   "user": {
     "id": "user-123",
     "name": "John Doe",
@@ -50,8 +53,7 @@ Authenticates a user and returns a session token.
 
 Registers a new user.
 
-**Endpoint:** `/api/auth/register`
-
+**Endpoint:** `/api/auth/register`  
 **Method:** `POST`
 
 **Request Body:**
@@ -63,31 +65,17 @@ Registers a new user.
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Registration successful",
-  "user": {
-    "id": "user-123",
-    "name": "John Doe",
-    "email": "user@example.com",
-    "role": "USER",
-    "storageUsed": 0,
-    "maxStorage": 10485760,
-    "imageCount": 0,
-    "maxImages": 100
-  }
-}
-```
+**Response:** Same structure as login.
 
 ### Logout
 
-Logs out the current user.
+Logs out the current user (token invalidation depends on server implementation).
 
-**Endpoint:** `/api/auth/logout`
+**Endpoint:** `/api/auth/logout`  
+**Method:** `POST`  
+**Protected:** ✅
 
-**Method:** `POST`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -101,9 +89,11 @@ Logs out the current user.
 
 Returns the current authenticated user.
 
-**Endpoint:** `/api/auth/me`
+**Endpoint:** `/api/auth/me`  
+**Method:** `GET`  
+**Protected:** ✅
 
-**Method:** `GET`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -122,17 +112,21 @@ Returns the current authenticated user.
 }
 ```
 
+---
+
 ## Image Upload
 
 ### Upload Single Image
 
 Uploads a single image with face detection.
 
-**Endpoint:** `/api/images/upload`
+**Endpoint:** `/api/images/upload`  
+**Method:** `POST`  
+**Protected:** ✅
 
-**Method:** `POST`
+**Headers:** `Authorization: Bearer <token>`
 
-**Request Body:**
+**Form Data:**
 - `file`: Image file (multipart/form-data)
 - `label` (optional): Label for the image
 - `details` (optional): Additional details about the image
@@ -156,11 +150,13 @@ Uploads a single image with face detection.
 
 Uploads multiple images at once and groups them by detected faces.
 
-**Endpoint:** `/api/images/upload-batch`
+**Endpoint:** `/api/images/upload-batch`  
+**Method:** `POST`  
+**Protected:** ✅
 
-**Method:** `POST`
+**Headers:** `Authorization: Bearer <token>`
 
-**Request Body:**
+**Form Data:**
 - `files`: Array of image files (multipart/form-data)
 
 **Response:**
@@ -201,9 +197,11 @@ Uploads multiple images at once and groups them by detected faces.
 
 Updates the label and details for an image.
 
-**Endpoint:** `/api/images/:imageId`
+**Endpoint:** `/api/images/:imageId`  
+**Method:** `PUT`  
+**Protected:** ✅
 
-**Method:** `PUT`
+**Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
 ```json
@@ -232,9 +230,11 @@ Updates the label and details for an image.
 
 Deletes an image.
 
-**Endpoint:** `/api/images/:imageId`
+**Endpoint:** `/api/images/:imageId`  
+**Method:** `DELETE`  
+**Protected:** ✅
 
-**Method:** `DELETE`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -248,9 +248,11 @@ Deletes an image.
 
 Returns the most recently uploaded images.
 
-**Endpoint:** `/api/images/recent`
+**Endpoint:** `/api/images/recent`  
+**Method:** `GET`  
+**Protected:** ✅
 
-**Method:** `GET`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -275,17 +277,21 @@ Returns the most recently uploaded images.
 }
 ```
 
+---
+
 ## Image Search
 
 ### Search by Face
 
 Searches for images containing faces similar to the uploaded image.
 
-**Endpoint:** `/api/images/search`
+**Endpoint:** `/api/images/search`  
+**Method:** `POST`  
+**Protected:** ✅
 
-**Method:** `POST`
+**Headers:** `Authorization: Bearer <token>`
 
-**Request Body:**
+**Form Data:**
 - `file`: Image file (multipart/form-data)
 - `threshold` (optional): Similarity threshold (0-1, default: 0.6)
 
@@ -312,15 +318,19 @@ Searches for images containing faces similar to the uploaded image.
 }
 ```
 
+---
+
 ## Face Groups
 
 ### Get Face Groups
 
 Returns all face groups for the current user.
 
-**Endpoint:** `/api/images/groups`
+**Endpoint:** `/api/images/groups`  
+**Method:** `GET`  
+**Protected:** ✅
 
-**Method:** `GET`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -354,9 +364,11 @@ Returns all face groups for the current user.
 
 Updates the label and details for a face group.
 
-**Endpoint:** `/api/images/groups/:groupId`
+**Endpoint:** `/api/images/groups/:groupId`  
+**Method:** `PUT`  
+**Protected:** ✅
 
-**Method:** `PUT`
+**Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
 ```json
@@ -387,9 +399,11 @@ Updates the label and details for a face group.
 
 Deletes a face group.
 
-**Endpoint:** `/api/images/groups/:groupId`
+**Endpoint:** `/api/images/groups/:groupId`  
+**Method:** `DELETE`  
+**Protected:** ✅
 
-**Method:** `DELETE`
+**Headers:** `Authorization: Bearer <token>`
 
 **Response:**
 ```json
@@ -399,15 +413,19 @@ Deletes a face group.
 }
 ```
 
+---
+
 ## User Management
 
 ### Update User Profile
 
 Updates the user's profile information.
 
-**Endpoint:** `/api/users/profile`
+**Endpoint:** `/api/users/profile`  
+**Method:** `PUT`  
+**Protected:** ✅
 
-**Method:** `PUT`
+**Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
 ```json
@@ -439,9 +457,11 @@ Updates the user's profile information.
 
 Changes the user's password.
 
-**Endpoint:** `/api/users/password`
+**Endpoint:** `/api/users/password`  
+**Method:** `PUT`  
+**Protected:** ✅
 
-**Method:** `PUT`
+**Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
 ```json
@@ -458,6 +478,8 @@ Changes the user's password.
   "message": "Password changed successfully"
 }
 ```
+
+---
 
 ## Error Responses
 
@@ -503,33 +525,10 @@ All API endpoints may return the following error responses:
 }
 ```
 
-## Mock API Endpoints
+---
 
-For testing purposes, the application includes mock API endpoints that simulate the behavior of the real API. These endpoints are prefixed with `/api/mock/` and return predefined responses.
-
-### Mock Login
-**Endpoint:** `/api/mock/login`
-
-### Mock Register
-**Endpoint:** `/api/mock/register`
-
-### Mock Logout
-**Endpoint:** `/api/mock/logout`
-
-### Mock Get Current User
-**Endpoint:** `/api/mock/me`
-
-### Mock Upload Single Image
-**Endpoint:** `/api/mock/upload`
-
-### Mock Batch Upload Images
-**Endpoint:** `/api/mock/upload-batch`
-
-### Mock Search by Face
-**Endpoint:** `/api/mock/search`
-
-### Mock Get Face Groups
-**Endpoint:** `/api/mock/groups`
+> 🛡️ **Note:** All protected endpoints must be accessed with the `Authorization` header:  
+> `Authorization: Bearer <JWT_TOKEN>`
 
 ## Implementation Notes
 
@@ -537,4 +536,6 @@ For testing purposes, the application includes mock API endpoints that simulate 
 2. File uploads should use `multipart/form-data` encoding.
 3. The Flask backend handles face detection and recognition.
 4. Image URLs are relative to the server root.
-5. The mock API endpoints are used for testing when the Flask backend is not available. 
+5. JWT tokens should be included in the Authorization header for all protected endpoints.
+6. Token expiration is set to 24 hours by default.
+7. The mock API endpoints are used for testing when the Flask backend is not available. 

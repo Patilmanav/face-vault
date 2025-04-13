@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: request.headers.get("Authorization") || "",
       },
-      // Forward cookies from the client to the Flask backend
       credentials: "include",
     });
 
@@ -16,13 +16,21 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || "Failed to fetch recent images" },
+        { 
+          success: false,
+          message: data.message || "Failed to fetch recent images",
+          images: []
+        },
         { status: response.status }
       );
     }
 
     // Create a response with the recent images data
-    const nextResponse = NextResponse.json(data);
+    const nextResponse = NextResponse.json({
+      success: true,
+      message: "Recent images fetched successfully",
+      images: data.images || []
+    });
 
     // Copy cookies from Flask response to Next.js response
     const cookies = response.headers.getSetCookie();
@@ -34,7 +42,11 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Recent images API error:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      { 
+        success: false,
+        message: "An unexpected error occurred",
+        images: []
+      },
       { status: 500 }
     );
   }

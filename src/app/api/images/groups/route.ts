@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const response = await fetch(`${flaskApiUrl}/images/groups`, {
       method: "GET",
       headers: {
-        // Forward cookies for authentication
+        Authorization: request.headers.get("Authorization") || "",
         Cookie: request.headers.get("cookie") || "",
       },
     });
@@ -17,14 +17,28 @@ export async function GET(request: NextRequest) {
     // Get the response data
     const data = await response.json();
     
-    // Return the response with the same status code
-    return NextResponse.json(data, { status: response.status });
+    if (!response.ok) {
+      return NextResponse.json(
+        { 
+          success: false,
+          message: data.message || "Failed to fetch face groups",
+          faceGroups: []
+        },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Face groups fetched successfully",
+      faceGroups: data.faceGroups || []
+    });
   } catch (error) {
     console.error("Error in groups API route:", error);
     return NextResponse.json(
       { 
-        success: false, 
-        message: "Failed to fetch face groups",
+        success: false,
+        message: "An unexpected error occurred",
         faceGroups: []
       },
       { status: 500 }
