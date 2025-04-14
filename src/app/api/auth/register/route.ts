@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, password } = body;
 
-    // Forward the request to the Flask backend
     const response = await fetch(`${process.env.FLASK_API_URL}/auth/register`, {
       method: "POST",
       headers: {
@@ -17,27 +16,15 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(
-        { message: data.message || "Registration failed" },
-        { status: response.status }
-      );
+      return NextResponse.json({ success: false, message: data.detail || "Registration failed" }, { status: response.status });
     }
 
-    // Create a response with the user data
-    const nextResponse = NextResponse.json(data);
-
-    // Copy cookies from Flask response to Next.js response
-    const cookies = response.headers.getSetCookie();
-    cookies.forEach((cookie) => {
-      nextResponse.headers.append("Set-Cookie", cookie);
+    return NextResponse.json({
+      success: true,
+      user: data,
     });
-
-    return nextResponse;
-  } catch (error) {
-    console.error("Registration API error:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("Register error:", err);
+    return NextResponse.json({ success: false, message: "Register failed" }, { status: 500 });
   }
-} 
+}
