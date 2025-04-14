@@ -1,14 +1,16 @@
-// /app/api/auth/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("Authorization");
+    const token = request.cookies.get("access_token")?.value;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/v1/auth/me`, {
-      method: "GET",
+    if (!token) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
+    const response = await fetch(`${process.env.FLASK_API_URL}/auth/me`, {
       headers: {
-        "Authorization": authHeader || "", // forward token
+        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
@@ -16,18 +18,15 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(
-        { success: false, message: data.detail || "Authentication check failed" },
-        { status: response.status }
-      );
+      return NextResponse.json({ success: false, message: data.detail || "Unauthorized" }, { status: response.status });
     }
 
     return NextResponse.json({
       success: true,
       user: data,
     });
-  } catch (error) {
-    console.error("Auth status API error:", error);
-    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
+  } catch (err) {
+    console.error("Status error:", err);
+    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
   }
 }
