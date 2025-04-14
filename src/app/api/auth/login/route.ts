@@ -5,50 +5,42 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
-    // Forward the request to the Flask backend
+    const formData = new URLSearchParams();
+    formData.append("username", email);  // FastAPI expects 'username'
+    formData.append("password", password); // FastAPI expects 'password'
+
     const response = await fetch(`${process.env.FLASK_API_URL}/auth/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({ email, password }),
+      body: formData,
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(
-        { 
-          success: false,
-          message: data.message || "Login failed" 
-        },
-        { status: response.status }
-      );
+      return NextResponse.json({ success: false, message: data.detail }, { status: response.status });
     }
 
-    // Create a response with the user data
+    // Store token in cookie (optional)
     const nextResponse = NextResponse.json({
       success: true,
-      message: "Login successful",
-      token: data.token,
-      user: data.user
+      token: data.access_token,
+      token_type: data.token_type,
     });
 
-    // Copy cookies from Flask response to Next.js response
-    const cookies = response.headers.getSetCookie();
-    cookies.forEach((cookie) => {
-      nextResponse.headers.append("Set-Cookie", cookie);
+    nextResponse.cookies.set("access_token", data.access_token, {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60, // 1 hour
     });
 
     return nextResponse;
-  } catch (error) {
-    console.error("Login API error:", error);
-    return NextResponse.json(
-      { 
-        success: false,
-        message: "An unexpected error occurred" 
-      },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("Login error:", err);
+    return NextResponse.json({ success: false, message: "Login failed" }, { status: 500 });
   }
-} 
+}
