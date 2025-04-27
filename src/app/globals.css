@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Onboarding highlight effect */
+.onboarding-highlight {
+  position: relative;
+  z-index: 51;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Add a pulsing animation for the highlighted element */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.onboarding-highlight {
+  animation: pulse 2s infinite;
+}

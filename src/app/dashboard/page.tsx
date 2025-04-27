@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
+import { useOnboarding } from "@/providers/OnboardingProvider";
 import Link from "next/link";
 import { Upload, Search, Image as ImageIcon, Trash2, Edit, AlertCircle, Users } from "lucide-react";
 import Image from "next/image";
+import OnboardingTour from "@/components/OnboardingTour";
 
 interface ImageGroup {
   id: string;
@@ -22,6 +24,7 @@ interface Image {
 
 export default function DashboardPage() {
   const { user, isAuthenticated, loading } = useAuth();
+  const { showOnboarding } = useOnboarding();
   const router = useRouter();
   const [recentImages, setRecentImages] = useState<Image[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,12 +95,13 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div id="dashboard-header" className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
             Dashboard
           </h1>
           <div className="flex flex-wrap gap-3">
             <Link
+              id="upload-button"
               href="/upload"
               className="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-sm"
             >
@@ -105,6 +109,7 @@ export default function DashboardPage() {
               Upload Image
             </Link>
             <Link
+              id="search-button"
               href="/search"
               className="bg-gray-800 text-gray-200 px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors flex items-center shadow-sm border border-gray-700"
             >
@@ -112,6 +117,7 @@ export default function DashboardPage() {
               Search
             </Link>
             <Link
+              id="face-groups-button"
               href="/groups"
               className="bg-gray-800 text-gray-200 px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors flex items-center shadow-sm border border-gray-700"
             >
@@ -122,7 +128,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Storage Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="storage-stats" className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-700/50 hover:shadow-md transition-shadow">
             <h2 className="text-lg font-semibold mb-3 text-gray-200">Storage Usage</h2>
             <div className="mb-3">
@@ -226,6 +232,9 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+      
+      {/* Onboarding Tour */}
+      {showOnboarding && <OnboardingTour />}
     </div>
   );
 } 
