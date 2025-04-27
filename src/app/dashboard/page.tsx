@@ -7,6 +7,11 @@ import Link from "next/link";
 import { Upload, Search, Image as ImageIcon, Trash2, Edit, AlertCircle, Users } from "lucide-react";
 import Image from "next/image";
 
+interface ImageGroup {
+  id: string;
+  image_urls: string[];
+}
+
 interface Image {
   id: string;
   url: string;
@@ -49,7 +54,7 @@ export default function DashboardPage() {
   
       const groups = data.images ?? []; // fallback to empty array
   
-      const images = groups.flatMap((group: any) =>
+      const images = groups.flatMap((group: ImageGroup) =>
         group.image_urls.map((url: string, index: number) => ({
           id: `${group.id}-${index}`,
           url,

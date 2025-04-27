@@ -36,7 +36,7 @@ export default function Contact() {
             <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
               <h2 className="text-xl font-semibold mb-4 text-gray-100">Get in Touch</h2>
               <p className="text-gray-300 leading-relaxed mb-4">
-                Have questions about FaceVault? We're here to help. Send us a message and we'll respond as soon as possible.
+                Have questions about FaceVault? We&apos;re here to help. Send us a message and we&apos;ll respond as soon as possible.
               </p>
               <div className="space-y-4">
                 <div>

@@ -20,7 +20,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-  const { isAuthenticated, loading, user, logout } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   const router = useRouter();
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -172,7 +172,8 @@ export default function ProfilePage() {
     try {
       await logout();
       router.push("/login");
-    } catch (err) {
+    } catch {
+
       setError("Failed to log out. Please try again.");
     }
   };

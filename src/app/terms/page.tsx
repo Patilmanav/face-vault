@@ -56,7 +56,7 @@ export default function TermsOfService() {
           <section className="bg-gray-800/50 p-6 rounded-xl border border-gray-700/50">
             <h2 className="text-xl font-semibold mb-4 text-gray-100">5. Disclaimer</h2>
             <p className="text-gray-300 leading-relaxed">
-              The materials on FaceVault are provided on an 'as is' basis. FaceVault makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+              The materials on FaceVault are provided on an &apos;as is&apos; basis. FaceVault makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
             </p>
           </section>
 

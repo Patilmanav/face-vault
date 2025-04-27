@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
-import { Upload, AlertCircle, X, CheckCircle, ArrowLeft, ArrowRight, Users } from "lucide-react";
+import { Upload, AlertCircle, X, CheckCircle } from "lucide-react";
 import Image from 'next/image';
 
 interface ImageFile {
@@ -39,9 +39,9 @@ export default function UploadPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'upload' | 'review'>('upload');
-  const [faceGroups, setFaceGroups] = useState<FaceGroup[]>([]);
-  const [rejectedImages, setRejectedImages] = useState<{filename: string, reason: string}[]>([]);
+  // const [currentStep, setCurrentStep] = useState<'upload' | 'review'>('upload');
+  // const [faceGroups, setFaceGroups] = useState<FaceGroup[]>([]);
+  // const [rejectedImages, setRejectedImages] = useState<{filename: string, reason: string}[]>([]);
   // const [uploadResponse, setUploadResponse] = useState<UploadResponse | null>(null);
 
   if (loading || !isAuthenticated) {
@@ -124,13 +124,11 @@ export default function UploadPage() {
     setSuccess(false);
 
     try {
-      // Create FormData with all images
       const formData = new FormData();
       
-      var response ;
-      if (images.length == 1) {
-        images.forEach((image, index) => {
-          console.log(`Uploading image ${index + 1}: ${image.file.name}`);
+      let response;
+      if (images.length === 1) {
+        images.forEach((image) => {
           formData.append(`file`, image.file);
         });
         response = await fetch("/api/images/upload", {
@@ -139,16 +137,15 @@ export default function UploadPage() {
           credentials: "include",
         });
       } else {
-        images.forEach((image, index) => {
-          console.log(`Uploading image ${index + 1}: ${image.file.name}`);
+        images.forEach((image) => {
           formData.append(`files`, image.file);
         });
-      response = await fetch("/api/images/upload-batch", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-    }
+        response = await fetch("/api/images/upload-batch", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -160,8 +157,8 @@ export default function UploadPage() {
       
       // Process the response
       if (data.success) {
-        setFaceGroups(data.faceGroups || []);
-        setRejectedImages(data.rejectedImages || []);
+        // setFaceGroups(data.faceGroups || []);
+        // setRejectedImages(data.rejectedImages || []);
         setSuccess(true);
         // setCurrentStep('review');
         router.push('/dashboard');
@@ -175,17 +172,17 @@ export default function UploadPage() {
     }
   };
 
-  const updateGroupDetails = (groupId: string, field: 'label' | 'details', value: string) => {
-    setFaceGroups(prev => 
-      prev.map(group => 
-        group.id === groupId ? { ...group, [field]: value } : group
-      )
-    );
-  };
+  // const updateGroupDetails = (groupId: string, field: 'label' | 'details', value: string) => {
+  //   setFaceGroups(prev => 
+  //     prev.map(group => 
+  //       group.id === groupId ? { ...group, [field]: value } : group
+  //     )
+  //   );
+  // };
 
-  const goBackToUpload = () => {
-    setCurrentStep('upload');
-  };
+  // const goBackToUpload = () => {
+  //   setCurrentStep('upload');
+  // };
 
   // const handleSaveAndContinue = async () => {
   //   try {
@@ -226,7 +223,7 @@ export default function UploadPage() {
           </div>
         )}
         
-        {success && currentStep === 'upload' && (
+        {success && (
           <div className="bg-green-900/50 text-green-200 p-4 rounded-lg mb-6 text-sm flex items-center border border-green-800/50">
             <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
             Images uploaded successfully!

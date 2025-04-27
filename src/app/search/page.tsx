@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
-import { Search, Upload, AlertCircle, X, Image as ImageIcon, SlidersHorizontal } from "lucide-react";
+import { Search, Upload, AlertCircle, X, Image as ImageIcon } from "lucide-react";
+import Image from 'next/image';
 
 interface SearchResult {
   id: string;
@@ -18,7 +19,6 @@ export default function SearchPage() {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -166,11 +166,12 @@ export default function SearchPage() {
                   
                   {previewUrl ? (
                     <div className="relative group">
-                      <img
-                        ref={imageRef}
+                      <Image
                         src={previewUrl}
                         alt="Preview"
-                        className="max-h-64 mx-auto rounded-lg shadow-sm"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover rounded-lg"
                       />
                       <button
                         type="button"
@@ -274,9 +275,11 @@ export default function SearchPage() {
                     {searchResults.map((result) => (
                       <div key={result.id} className="group relative bg-gray-800/30 rounded-lg border border-gray-700/50 overflow-hidden hover:shadow-md transition-shadow duration-200">
                         <div className="aspect-square relative bg-gray-700">
-                          <img
+                          <Image
                             src={result.url}
                             alt={result.label || "Search result"}
+                            width={200}
+                            height={200}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
