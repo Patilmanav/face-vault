@@ -3,22 +3,34 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     // Forward the request to the Flask backend
-    const response = await fetch(`${process.env.FLASK_API_URL}/images/recent`, {
+    const token = request.cookies.get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Authentication token not found",
+          faceGroups: [],
+          rejectedImages: [],
+        },
+        { status: 401 }
+      );
+    }
+    const response = await fetch(`${process.env.FLASK_API_URL}/images/groups`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: request.headers.get("Authorization") || "",
+        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
     });
 
     const data = await response.json();
-
+    console.log(data);
     if (!response.ok) {
       return NextResponse.json(
         { 
           success: false,
-          message: data.message || "Failed to fetch recent images",
+          message: data.detail || "Failed to fetch recent images",
           images: []
         },
         { status: response.status }
@@ -29,7 +41,7 @@ export async function GET(request: NextRequest) {
     const nextResponse = NextResponse.json({
       success: true,
       message: "Recent images fetched successfully",
-      images: data.images || []
+      images: data.groups || []
     });
 
     // Copy cookies from Flask response to Next.js response

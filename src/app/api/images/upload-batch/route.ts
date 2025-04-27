@@ -2,58 +2,70 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the form data from the request
     const formData = await request.formData();
-    
-    // Forward the request to the Flask backend
+
+    const token = request.cookies.get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Authentication token not found",
+          faceGroups: [],
+          rejectedImages: [],
+        },
+        { status: 401 }
+      );
+    }
+
     const response = await fetch(`${process.env.FLASK_API_URL}/images/upload-batch`, {
       method: "POST",
-      body: formData,
       headers: {
-        Authorization: request.headers.get("Authorization") || "",
+        Authorization: `Bearer ${token}`,
       },
-      credentials: "include",
+      body: formData,
     });
-
-    const data = await response.json();
-
+    const text = await response.text();
+    console.log('\n\n\n****************************', text, '\n****************************\n\n');
+    const data = JSON.parse(text);
+    
     if (!response.ok) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: data.message || "Batch upload failed",
+          message: data.detail || "Batch upload failed",
           faceGroups: [],
-          rejectedImages: []
+          rejectedImages: [],
         },
         { status: response.status }
       );
     }
 
-    // Create a response with the batch upload results
     const nextResponse = NextResponse.json({
       success: true,
       message: "Batch upload completed successfully",
       faceGroups: data.faceGroups || [],
-      rejectedImages: data.rejectedImages || []
+      rejectedImages: data.rejectedImages || [],
     });
 
-    // Copy cookies from Flask response to Next.js response
-    const cookies = response.headers.getSetCookie();
-    cookies.forEach((cookie) => {
-      nextResponse.headers.append("Set-Cookie", cookie);
-    });
+    // 🍪 Optionally copy any Set-Cookie headers from Flask (if any)
+    const setCookieHeaders = response.headers.getSetCookie?.();
+    if (setCookieHeaders?.length) {
+      setCookieHeaders.forEach((cookie) => {
+        nextResponse.headers.append("Set-Cookie", cookie);
+      });
+    }
 
     return nextResponse;
   } catch (error) {
     console.error("Batch upload API error:", error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: "An unexpected error occurred",
         faceGroups: [],
-        rejectedImages: []
+        rejectedImages: [],
       },
       { status: 500 }
     );
   }
-} 
+}

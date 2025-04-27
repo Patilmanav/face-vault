@@ -126,18 +126,29 @@ export default function UploadPage() {
     try {
       // Create FormData with all images
       const formData = new FormData();
-      images.forEach((image, index) => {
-        console.log(`Uploading image ${index + 1}: ${image.file.name}`);
-        formData.append(`images`, image.file);
-      });
-
-      // For testing purposes, use the mock API
-      // In production, use the real API: "/api/images/upload-batch"
-      const response = await fetch("/api/mock/upload-batch", {
+      
+      var response ;
+      if (images.length == 1) {
+        images.forEach((image, index) => {
+          console.log(`Uploading image ${index + 1}: ${image.file.name}`);
+          formData.append(`file`, image.file);
+        });
+        response = await fetch("/api/images/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+      } else {
+        images.forEach((image, index) => {
+          console.log(`Uploading image ${index + 1}: ${image.file.name}`);
+          formData.append(`files`, image.file);
+        });
+      response = await fetch("/api/images/upload-batch", {
         method: "POST",
         body: formData,
         credentials: "include",
       });
+    }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -152,7 +163,8 @@ export default function UploadPage() {
         setFaceGroups(data.faceGroups || []);
         setRejectedImages(data.rejectedImages || []);
         setSuccess(true);
-        setCurrentStep('review');
+        // setCurrentStep('review');
+        router.push('/dashboard');
       } else {
         throw new Error(data.message || "Upload failed");
       }
@@ -175,41 +187,56 @@ export default function UploadPage() {
     setCurrentStep('upload');
   };
 
-  const handleSaveAndContinue = async () => {
-    try {
-      // In a real implementation, you would send the updated group details to the backend
-      // For now, we'll just simulate a successful save
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Redirect to dashboard or show success message
-      router.push('/dashboard');
-    } catch (err) {
-      setError("Failed to save changes. Please try again. "+err);
-    }
-  };
+  // const handleSaveAndContinue = async () => {
+  //   try {
+  //     // Save group details to backend
+  //     const response = await fetch("/api/images/groups", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         groups: faceGroups,
+  //         rejectedImages: rejectedImages
+  //       }),
+  //       credentials: "include",
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || "Failed to save group details");
+  //     }
+
+  //     // Redirect to dashboard
+  //     router.push('/dashboard');
+  //   } catch (err) {
+  //     setError("Failed to save changes. Please try again. "+err);
+  //   }
+  // };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Upload Images</h1>
-      
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm flex items-center">
-          <AlertCircle className="w-5 h-5 mr-2" />
-          {error}
-        </div>
-      )}
-      
-      {success && currentStep === 'upload' && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-md mb-4 text-sm flex items-center">
-          <CheckCircle className="w-5 h-5 mr-2" />
-          Images uploaded successfully!
-        </div>
-      )}
-      
-      {currentStep === 'upload' ? (
-        <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="min-h-screen bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600 mb-6">Upload Images</h1>
+        
+        {error && (
+          <div className="bg-red-900/50 text-red-200 p-4 rounded-lg mb-6 text-sm flex items-center border border-red-800/50">
+            <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+            {error}
+          </div>
+        )}
+        
+        {success && currentStep === 'upload' && (
+          <div className="bg-green-900/50 text-green-200 p-4 rounded-lg mb-6 text-sm flex items-center border border-green-800/50">
+            <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+            Images uploaded successfully!
+          </div>
+        )}
+        
+        {/* {currentStep === 'upload' ? ( */}
+        <div className="bg-gray-800/50 p-6 rounded-xl shadow-sm border border-gray-700/50">
           <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-6"
+            className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center mb-6 hover:border-blue-400 transition-colors"
             onDragOver={handleDragOver}
             onDrop={handleDrop}
           >
@@ -223,18 +250,20 @@ export default function UploadPage() {
             />
             
             <div className="py-8">
-              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-2">
+              <div className="bg-gray-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-blue-400" />
+              </div>
+              <p className="text-gray-300 mb-2">
                 Drag and drop images here, or click to select
               </p>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
               >
                 Select Images
               </button>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-400 mt-2">
                 Supported formats: JPG, PNG, GIF (max 5MB per image)
               </p>
             </div>
@@ -242,7 +271,7 @@ export default function UploadPage() {
           
           {images.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-lg font-medium mb-3">Selected Images ({images.length})</h2>
+              <h2 className="text-lg font-medium text-gray-200 mb-3">Selected Images ({images.length})</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {images.map((image) => (
                   <div key={image.previewUrl} className="relative group">
@@ -256,12 +285,12 @@ export default function UploadPage() {
                     <button
                       type="button"
                       onClick={() => removeImage(image.file)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="w-4 h-4" />
                     </button>
                     {image.status === 'error' && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-xs p-1 rounded-b">
+                      <div className="absolute bottom-0 left-0 right-0 bg-red-600 text-white text-xs p-1 rounded-b">
                         {image.error}
                       </div>
                     )}
@@ -276,7 +305,7 @@ export default function UploadPage() {
               type="button"
               onClick={uploadImages}
               disabled={isUploading || images.length === 0}
-              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               {isUploading ? (
                 <>
@@ -292,7 +321,7 @@ export default function UploadPage() {
             </button>
           </div>
         </div>
-      ) : (
+     {/* ) : (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center mb-6">
             <button
@@ -396,7 +425,9 @@ export default function UploadPage() {
             </button>
           </div>
         </div>
-      )}
+      )}*/}
+      
+      </div>
     </div>
   );
 }

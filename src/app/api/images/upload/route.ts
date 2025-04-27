@@ -5,12 +5,24 @@ export async function POST(request: NextRequest) {
     // Get the form data from the request
     const formData = await request.formData();
     
+    const token = request.cookies.get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Authentication token not found",
+          faceGroups: [],
+          rejectedImages: [],
+        },
+        { status: 401 }
+      );
+    }
     // Forward the request to the Flask backend
     const response = await fetch(`${process.env.FLASK_API_URL}/images/upload`, {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: request.headers.get("Authorization") || "",
+        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
     });
