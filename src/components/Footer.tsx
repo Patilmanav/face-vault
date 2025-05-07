@@ -10,7 +10,19 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} FaceVault. All rights reserved.
             </p>
           </div>
-          <div className="flex space-x-6">
+          <div className="flex flex-wrap justify-center gap-6">
+            <Link 
+              href="/about" 
+              className="text-gray-400 hover:text-blue-400 transition-colors"
+            >
+              About
+            </Link>
+            <Link 
+              href="/contact" 
+              className="text-gray-400 hover:text-blue-400 transition-colors"
+            >
+              Contact Us
+            </Link>
             <Link 
               href="/privacy" 
               className="text-gray-400 hover:text-blue-400 transition-colors"
@@ -22,12 +34,6 @@ export default function Footer() {
               className="text-gray-400 hover:text-blue-400 transition-colors"
             >
               Terms of Service
-            </Link>
-            <Link 
-              href="/contact" 
-              className="text-gray-400 hover:text-blue-400 transition-colors"
-            >
-              Contact Us
             </Link>
           </div>
         </div>

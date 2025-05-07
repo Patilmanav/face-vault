@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/nodemailer": "^6.4.17",
     "face-api.js": "^0.22.2",
     "lucide-react": "^0.487.0",
     "next": "15.2.4",
+    "nodemailer": "^7.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -21,9 +23,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.1.5",
     "typescript": "^5"
   }
 }

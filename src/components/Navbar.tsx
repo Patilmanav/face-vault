@@ -23,6 +23,13 @@ export default function Navbar() {
             </Link>
           </div>
 
+            {/* Scroll Message */}
+          <div className="hidden md:block w-1/2 overflow-hidden mx-4">
+            <div className="whitespace-nowrap animate-marquee text-sm text-yellow-300 font-medium">
+              🔒 Facial recognition feature is temporarily offline. Fill out the Contact Us form for a demo — we’ll activate it via a private server.
+            </div>
+          </div>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {isAuthenticated ? (
